@@ -39,6 +39,8 @@
     <deb.pkg.name>spark</deb.pkg.name>
     <deb.install.path>/usr/share/spark</deb.install.path>
     <deb.user>root</deb.user>
+    <spark.examples.jar.basename>spark-examples-${project.version}-hadoop${hadoop.version}.jar</spark.examples.jar.basename>
+    <spark.examples.jar>${basedir}/../examples/target/${spark.jar.dir}/${spark.examples.jar.basename}</spark.examples.jar>
   </properties>
 
   <dependencies>
@@ -228,6 +230,7 @@
             <version>0.11</version>
             <executions>
               <execution>
+                <id>spark_all</id>
                 <phase>package</phase>
                 <goals>
                   <goal>jdeb</goal>
@@ -304,6 +307,41 @@
                   </dataSet>
                 </configuration>
               </execution>
+              <execution>
+                <id>spark_examples</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>jdeb</goal>
+                </goals>
+                <configuration>
+                  <deb>${project.build.directory}/${deb.pkg.name}_examples_${project.version}-${buildNumber}.deb</deb>
+                  <attach>false</attach>
+                  <compression>gzip</compression>
+                  <controlDir>${basedir}/src/deb/examples_control</controlDir>
+                  <dataSet>
+                    <data>
+                      <src>${spark.examples.jar}</src>
+                      <type>file</type>
+                      <mapper>
+                        <type>perm</type>
+                        <user>${deb.user}</user>
+                        <group>${deb.user}</group>
+                        <prefix>${deb.install.path}/jars</prefix>
+                      </mapper>
+                    </data>                  
+                    <data>
+                      <src>${basedir}/src/deb/RELEASE</src>
+                      <type>file</type>
+                      <mapper>
+                        <type>perm</type>
+                        <user>${deb.user}</user>
+                        <group>${deb.user}</group>
+                        <prefix>${deb.install.path}</prefix>
+                      </mapper>
+                    </data>
+                  </dataSet>
+                </configuration>
+              </execution>              
             </executions>
           </plugin>
         </plugins>
